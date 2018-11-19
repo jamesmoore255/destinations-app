@@ -1,0 +1,7 @@
+{
+  "name": "destinations",
+  "short_name": "destinations",
+  "description": "Tourism Application",
+  "start_url": "/",
+  "display": "standalone"
+}
