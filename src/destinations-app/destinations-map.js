@@ -24,12 +24,7 @@ export class DestinationsMap extends PolymerElement {
         border: 0 solid;
       }
       </style>
-      <google-map id="googleMap" places="{{places}}" fit-to-markers api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY" disable-street-view-control map="{{map}}" map-type="roadmap" disable-map-type-control zoom="8" max-zoom="9" min-zoom="5" single-info-window>
-        <google-map-marker latitude="{{marker.latitude}}" longitude="{{marker.longitude}}">
-          <h2 class="paper-font-subhead light">{{marker.name}}</h2>
-          <span class="paper-font-body light">{{marker.formatted_address}}</span>
-        </google-map-marker>
-      </google-map>
+      <google-map id="googleMap" places="{{places}}" fit-to-markers api-key="****************" disable-street-view-control map="{{map}}" map-type="roadmap" disable-map-type-control zoom="8" max-zoom="9" min-zoom="5" single-info-window></google-map>
     `;
   }
 
