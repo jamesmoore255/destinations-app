@@ -2,8 +2,8 @@
   "name": "destinations",
   "description": "Tourism Application",
   "dependencies": {
-    "@em-polymer/google-map": "^3.0.0-pre.5",
     "@polymer/app-layout": "^3.0.1",
+    "@polymer/google-map": "github:GoogleWebComponents/google-map#pull/421/head",
     "@polymer/iron-icons": "^3.0.1",
     "@polymer/iron-input": "^3.0.1",
     "@polymer/lit-element": "^0.6.3",
