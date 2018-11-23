@@ -1,8 +1,9 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import '@em-polymer/google-map/google-map.js';
-import '@em-polymer/google-map/google-map-marker.js';
-import '@polymer/iron-input/iron-input.js'
-import '@polymer/paper-input/paper-input-container.js';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/google-map/google-map.js';
+import '@polymer/google-map/google-map-marker.js';
+import '@polymer/google-map/google-map-search.js'
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 
 /**
  * @customElement
@@ -11,163 +12,120 @@ import '@polymer/paper-input/paper-input-container.js';
 export class DestinationsMap extends PolymerElement {
   static get template() {
     return html`
-      <custom-style>
-        <style is="custom-style">
-        .map-input {
-          position: absolute;
-          width: 100%;
-          top: 50%;
-          bottom: 50%;
-          text-align: center;
-        }
-        paper-input-container {
-          text-align: left;
-          width: 40%;
-          margin: auto;
-          position: relative;
-          z-index: 2;
-          height: 1.8em;
-        }
-        #map google-map {
-          z-index: 1;
-          height: 100vh;
-          width: 100%;
-        }
-        #map input {
-          width: 100%;
-          background-color: rgba(148, 147, 150, .5);
-          outline: none;
-          border: 0 solid;
-          z-index: 2;
-        }
-        datalist#queryList * {
-          width: 100%;
-          background-color: rgba(148, 147, 150, .5);
-          outline: none;
-          border: 0 solid;
-        }
-        </style>
-      </custom-style>
-      <div id="map">
-        <div class="map-input">
-          <paper-input-container class="container">
-            <iron-input slot="input">
-              <input placeholder="Let's see what's here..." id="filter" type="search" list="queryList" value="{{filter.query::input}}"/>
-              <datalist id="queryList"></datalist>
-            </iron-input>
-          </paper-input-container>
-        </div>
-        <google-map id="google_map" api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY" draggable="true">
-        <!-- Make list in properties for markers, which can be accessed and filtered by the destinations-search -->
-        </google-map>
-      </div>
+      <style is="custom-style">
+      google-map {
+        z-index: 1;
+        height: 100vh;
+      }
+      datalist#queryList * {
+        width: 100%;
+        background-color: rgba(148, 147, 150, .5);
+        outline: none;
+        border: 0 solid;
+      }
+      </style>
+      <google-map id="googleMap" places="{{places}}" fit-to-markers api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY" disable-street-view-control map="{{map}}" map-type="roadmap" disable-map-type-control zoom="8" max-zoom="9" min-zoom="5" single-info-window>
+        <google-map-marker latitude="{{marker.latitude}}" longitude="{{marker.longitude}}">
+          <h2 class="paper-font-subhead light">{{marker.name}}</h2>
+          <span class="paper-font-body light">{{marker.formatted_address}}</span>
+        </google-map-marker>
+      </google-map>
     `;
   }
-  constructor() {
-    super();
-    this.map_markers = [
-      {
-        title: `Bogota Distrito Capital`,
-        location: {lat: `4.6486259`, lng: `-74.2478909`}
-      },
-      {
-        title: `Medellin`,
-        location: {lat: `6.2477005`, lng: `-75.5570078`}
-      },
-      {
-        title: `Cali`,
-        location: {lat: `3.4260776`, lng: `-76.5098731`}
-      },
-      {
-        title: `Cartagena`,
-        location: {lat: `10.3999436`, lng: `-75.4872399`}
-      },
-      {
-        title: `Leticia`,
-        location: {lat: `-4.214643406856815`, lng: `-69.93831087829591`}
-      }];
-  }
+
   static get properties() {
     return {
-      map_markers: {
-        type: Array
+      places: {
+        type: Array,
+        value: null,
       },
-      filter: {
+      defaultMarkers: {
+        type: String,
+        value: null,
+        computed: '_computeMarkers(places)',
+      },
+      map: {
         type: Object,
-        value: () => {
-          return {};
-        }
+        value: null,
       },
-      // zoomIn: {
-      //   type: Object,
-      //   value: () => {
-      //     return {};
-      //   }
-      // }
     }
   }
+
   // Observe the name sub-property on the user object
-  static get observers() {
-    return [
-      '_runFilter(filter.query)',
-      // '_zoomIn(zoomIn.option)'
-    ]
-  }
-  ready() {
-    super.ready();
-    this.$.filter.addEventListener('keyup', e => {this._zoomIn(e)})
-  }
+  // static get observers() {
+  //   return [
+  //     `_runFilter(filter.query)`,
+  //     // '_zoomIn(zoomIn.option)'
+  //   ]
+  // }
   // For a property or sub-property dependency, the corresponding
   // argument is the new value of the property or sub-property
-  _runFilter(query) {
-    if (query) {
-      const dataList = this.$.queryList;
-      const option = document.createElement(`option`);
-      Array.from(this.$.google_map.children).forEach((m) => {
-        if (m.title.toLowerCase().indexOf(query.toLowerCase()) === -1) {
-          m.hidden = true;
-        }
-        if (m.title.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-          const arrayChecker = [];
-          Array.from(dataList.children).forEach((opt) => {
-            arrayChecker.push(opt.id);
-          });
-          if (!arrayChecker.includes(m.title)) {
-            option.value = m.title;
-            option.id = m.title;
-            dataList.appendChild(option);
-          }
-        }
-      //  Do not repeat additions of options
-      });
-    } else if (!this.$.google_map.children.length) {
-      let map = this.$.google_map;
-      map.latitude ="4.6486259";
-      map.longitude ="-74.2478909";
-      map.zoom = 5.5;
-      this.map_markers.forEach((loc) => {
-        const marker = document.createElement("google-map-marker");
-        marker.title = loc.title;
-        marker.latitude = loc.location.lat;
-        marker.longitude = loc.location.lng;
-        map.appendChild(marker);
-      });
-    }
+  // _runFilter(query) {
+  //   if (query) {
+  //     const dataList = this.$.queryList;
+  //     const option = document.createElement(`option`);
+  //     Array.from(this.$.google_map.children).forEach((m) => {
+  //       if (m.title.toLowerCase().indexOf(query.toLowerCase()) === -1) {
+  //         m.hidden = true;
+  //       }
+  //       if (m.title.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+  //         const arrayChecker = [];
+  //         Array.from(dataList.children).forEach((opt) => {
+  //           arrayChecker.push(opt.id);
+  //         });
+  //         if (!arrayChecker.includes(m.title)) {
+  //           option.value = m.title;
+  //           option.id = m.title;
+  //           dataList.appendChild(option);
+  //         }
+  //       }
+  //     //  Do not repeat additions of options
+  //     });
+  //   } else if (!this.$.google_map.children.length) {
+  //     let map = this.$.google_map;
+  //     map.latitude = `4.6486259`;
+  //     map.longitude = `-74.2478909`;
+  //     map.zoom = 5.5;
+  //     this.map_markers.forEach((loc) => {
+  //       const marker = document.createElement(`google-map-marker`);
+  //       marker.title = loc.title;
+  //       marker.latitude = loc.location.lat;
+  //       marker.longitude = loc.location.lng;
+  //       map.appendChild(marker);
+  //     });
+  //   }
+  // }
+  // _zoomIn(option) {
+  //   option.preventDefault();
+  //   console.log(option);
+  // if (option.code === `Enter`) {
+  //   let map = this.$.google_map;
+  //   Array.from(map.children).forEach((marker) => {
+  //     if (marker.title.toLowerCase().indexOf(option.target.value.toLowerCase()) !== -1) {
+  //       map.latitude = marker.latitude;
+  //       map.latitude = marker.latitude;
+  //       map.zoom = 10;
+  //     }
+  //   });
+  //   console.log(`Enter`);
+  // }
+// }
+  _computeMarkers(places) {
+    const map = this.$.googleMap;
+    places.forEach((place) => {
+      const marker = document.createElement(`google-map-marker`);
+      marker.latitude = place.location.lat;
+      marker.longitude = place.location.lng;
+      marker.label = place.title;
+      map.appendChild(marker);
+    })
   }
-  _zoomIn(option) {
-    option.preventDefault();
-    if (option.code === `Enter`) {
-      let map = this.$.google_map;
-      Array.from(map.children).forEach((marker) => {
-        if (marker.title.toLowerCase().indexOf(option.target.value.toLowerCase()) !== -1) {
-          map.latitude = marker.latitude;
-          map.latitude = marker.latitude;
-          map.zoom = 10;
-        }
-      });
-      console.log(`Enter`);
-    }
+  /**
+   * @return {string}
+   */
+  static get is() {
+    return 'destinations-map';
   }
 }
 
-window.customElements.define('destinations-map', DestinationsMap);
+window.customElements.define(DestinationsMap.is, DestinationsMap);
