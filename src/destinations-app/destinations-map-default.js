@@ -33,7 +33,7 @@ export class DestinationsMapDefault extends GestureEventListeners(WorldLocations
       <google-map 
         id="googleMap" 
         fit-to-markers 
-        api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY" 
+        api-key="***********" 
         disable-street-view-control map="{{map}}" 
         map-type="roadmap" 
         disable-map-type-control zoom="2.5" 
