@@ -3,6 +3,7 @@ import { updateStyles } from '@polymer/polymer/lib/mixins/element-mixin.js';
 
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout.js';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
+import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-input/iron-input.js';
 import '@polymer/paper-input/paper-input-container.js';
@@ -10,15 +11,13 @@ import '@polymer/paper-input/paper-input-container.js';
 import {DestinationsMap} from './destinations-map.js';
 import {DestinationsDrawer} from './destinations-drawer.js';
 
+const firebase = window.firebase;
+
 /**
  * @customElement
  * @polymer
  */
 class DestinationsApp extends PolymerElement {
-
-  constructor () {
-    super();
-  }
 
   static get template() {
     return html`
@@ -34,7 +33,7 @@ class DestinationsApp extends PolymerElement {
           width: 100vw;
           height: 100vh;
         }
-        paper-input-container {
+        paper-input {
           text-align: left;
           width: 40%;
           margin: auto;
@@ -62,70 +61,92 @@ class DestinationsApp extends PolymerElement {
       </style>
       <app-drawer-layout fullbleed>
         <app-drawer id="drawer" slot="drawer">
-          <destinations-drawer level="[[level]]"></destinations-drawer>
+          <destinations-drawer level="{{level}}"></destinations-drawer>
         </app-drawer>
         <div>
           <div class="map-input">
-            <paper-input-container>
-              <iron-input slot="input">
-                <input placeholder="Let's see what's here..."/>
-              </iron-input>
-            </paper-input-container>
+            <paper-input
+              value="{{searchText}}"
+              placeholder="Let's see what's here..."
+            ></paper-input>
+            <!--<paper-input-container>-->
+              <!--<iron-input slot="input">-->
+                <!--<input value="{{searchText}}" placeholder="Let's see what's here..."/>-->
+              <!--</iron-input>-->
+            <!--</paper-input-container>-->
           </div>
-          <destinations-map places="{{places}}"></destinations-map>
+          <destinations-map query="{{query}}" level="{{level}}"></destinations-map>
         </div>
       </app-drawer-layout>
     `;
   }
 
-  // static get hideDrawer() {
-  //   return () => {
-  //     updateStyles({
-  //       '--app-drawer-width': 0,
-  //     });
-  //   }
-  // }
-
   static get properties() {
     return {
-      places: {
-        type: String,
-        value: [
-          {
-            title: `Bogota Distrito Capital`,
-            location: {lat: `4.6486259`, lng: `-74.2478909`}
-          },
-          {
-            title: `Medellin`,
-            location: {lat: `6.2477005`, lng: `-75.5570078`}
-          },
-          {
-            title: `Cali`,
-            location: {lat: `3.4260776`, lng: `-76.5098731`}
-          },
-          {
-            title: `Cartagena`,
-            location: {lat: `10.3999436`, lng: `-75.4872399`}
-          },
-          {
-            title: `Leticia`,
-            location: {lat: `-4.214643406856815`, lng: `-69.93831087829591`}
-          }],
-      },
       level: {
         type: String,
-        value: `world`,
-        observer: `_sideLevel`
+        value: 'world',
+        observer: `_sideLevel`,
+        reflectToAttribute: true,
+        notify: true,
+        readOnly: false,
+      },
+      searchText: {
+        type: String,
+        value: null,
+      },
+      query: {
+        type: String,
+        value: null,
+        computed: '_computeQuery(searchText)',
       },
     };
   }
+
+  /**
+   * Dictates styling of main application depending
+   * on the map level (world, country, city, place)
+   *
+   * @param {String} newLevel
+   * @param {String} oldLevel
+   * @private
+   */
   _sideLevel(newLevel, oldLevel) {
-    if (newLevel === 'world' || newLevel === 'place') {
+    if (newLevel === 'world' || newLevel === 'point_of_interest') {
       this.updateStyles({
         '--app-drawer-width': 0,
       });
-    } else {}
+      // const functions = firebase.functions();
+      // const request = functions.httpsCallable('world-locations');
+      // try {
+      //   // const locations = await request({});
+      //   // console.log(locations);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      // const functions = firebase.functions();
+      // const request = functions.httpsCallable('world-locations');
+    } else {
+      this.updateStyles({
+        '--app-drawer-width': '256px',
+      });
+    }
   }
+
+  /**
+   * Compute query
+   *
+   * @param {string} text
+   * @return {*}
+   * @private
+   */
+  _computeQuery(text) {
+    if (typeof text === 'string' && text && text.length >= 3) {
+      return text;
+    }
+    return null;
+  }
+
   /**
    * @return {string}
    */
