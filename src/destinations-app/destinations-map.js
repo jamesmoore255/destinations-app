@@ -29,7 +29,7 @@ export class DestinationsMap extends PolymerElement {
       <google-map-search
         query$="{{query}}"
         results="{{results}}"
-        api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY"
+        api-key="*************"
         global-search
         map="{{map}}"
         types="regions"
@@ -41,7 +41,7 @@ export class DestinationsMap extends PolymerElement {
         <google-map 
           id="googleMap" 
           fit-to-markers 
-          api-key="AIzaSyB6no-JdLw75LtbfAHUvupiK7CSL7cz_jY" 
+          api-key="************" 
           disable-street-view-control 
           map="{{map}}" 
           map-type="roadmap" 
