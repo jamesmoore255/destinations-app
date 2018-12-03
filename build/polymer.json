@@ -1,0 +1,26 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src\\start-polymer3.js",
+  "fragments": [],
+  "sources": [
+    "src/start-polymer3.js",
+    "manifest/**",
+    "package.json",
+    "index.html",
+    "src/start-polymer3.js"
+  ],
+  "extraDependencies": [
+    "bower_components/webcomponentsjs/*.js",
+    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/bundles/**"
+  ],
+  "builds": [],
+  "lint": {
+    "rules": [
+      "polymer-3"
+    ]
+  },
+  "npm": true,
+  "componentDir": "node_modules/",
+  "moduleResolution": "node"
+}

@@ -12,7 +12,8 @@
     "@polymer/paper-input": "^3.0.1",
     "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-listbox": "^3.0.1",
-    "@polymer/polymer": "^3.0.0"
+    "@polymer/polymer": "^3.0.0",
+    "firebase": "^5.5.9"
   },
   "devDependencies": {
     "@polymer/test-fixture": "^4.0.2",

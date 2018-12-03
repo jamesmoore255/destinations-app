@@ -32,9 +32,10 @@ export class DestinationsDrawer extends PolymerElement {
   }
 
   _sideLevel(newLevel, oldLevel) {
+    console.log(newLevel);
     if (newLevel === 'country') {
       this.$.render.innerHTML = `<destinations-drawer-country></destinations-drawer-country>`;
-    } else if (newLevel === 'city') {
+    } else if (newLevel === 'locality') {
       this.$.render.innerHTML = `<destinations-drawer-city></destinations-drawer-city>`;
     } else {}
   }
